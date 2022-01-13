@@ -23,8 +23,12 @@ import (
 	"reflect"
 )
 
+import (
+	"github.com/guangzhou-meta/go-lib/tools"
+)
+
 func Copy(src interface{}, dst interface{}) {
-	CopyOfRange(src, 0, unpackV(reflect.ValueOf(src)).Len(), dst)
+	CopyOfRange(src, 0, tools.UnpackValue(reflect.ValueOf(src)).Len(), dst)
 }
 
 func CopyOf(src interface{}, newLength int, dst interface{}) {
@@ -38,7 +42,7 @@ func CopyOfRange(src interface{}, start int, end int, dst interface{}) {
 	if start > end {
 		panic("illegal argument")
 	}
-	originalLength := unpackV(reflect.ValueOf(src)).Len()
+	originalLength := tools.UnpackValue(reflect.ValueOf(src)).Len()
 	if start < 0 || start > originalLength {
 		panic("array index out of bounds")
 	}
@@ -47,23 +51,9 @@ func CopyOfRange(src interface{}, start int, end int, dst interface{}) {
 	CopyFrom(src, start, dst, 0, copyLength)
 }
 
-func unpackT(v reflect.Type) reflect.Type {
-	for reflect.Ptr == v.Kind() {
-		v = v.Elem()
-	}
-	return v
-}
-
-func unpackV(v reflect.Value) reflect.Value {
-	for reflect.Ptr == v.Kind() {
-		v = v.Elem()
-	}
-	return v
-}
-
 func CopyFrom(s interface{}, srcPos int, d interface{}, dstPos int, length int) {
-	sTV := unpackT(reflect.TypeOf(s))
-	dTV := unpackT(reflect.TypeOf(d))
+	sTV := tools.UnpackType(reflect.TypeOf(s))
+	dTV := tools.UnpackType(reflect.TypeOf(d))
 
 	if reflect.Slice != sTV.Kind() &&
 		reflect.Array != sTV.Kind() {
@@ -87,8 +77,8 @@ func CopyFrom(s interface{}, srcPos int, d interface{}, dstPos int, length int) 
 		panic("array index out of bounds")
 	}
 
-	sVV := unpackV(reflect.ValueOf(s))
-	dVV := unpackV(reflect.ValueOf(d))
+	sVV := tools.UnpackValue(reflect.ValueOf(s))
+	dVV := tools.UnpackValue(reflect.ValueOf(d))
 
 	if length+srcPos > sVV.Len() ||
 		length+dstPos > dVV.Len() {
