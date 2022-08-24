@@ -27,3 +27,5 @@ logs/
 *~
 .*.sw?
 *.log
+
+go.work
